@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Corona-Indonesia: Corona Data Today</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+
+    <style>
+            h1 { 
+              font:normal 2em sans-serif;
+              margin-top: 0.67em;
+              margin-bottom: 0.67em;
+              margin-left: 0;
+              margin-right: 0;
+              font-weight: bold;
+              text-align: center;
+            }
+            
+            h2 { 
+              font:normal 1.5em sans-serif;
+              margin-top: 0.67em;
+              margin-bottom: 0.67em;
+              margin-left: 0;
+              margin-right: 0;
+              font-weight: bold;
+              text-align: center;
+            }
+            
+            .item-list-basic{
+                line-height: 1;
+                list-style:none;
+                text-align: center;
+                margin:0;
+                padding:0;
+            }
+            
+            .item-list-basic li{
+                display: inline-block;
+                box-sizing:border-box;
+                position: relative;
+            
+                text-align:left;
+                font:normal 16px sans-serif;
+                padding: 15px 30px 15px 20px;
+                margin: 12px;
+            
+                background-color:#f4f8fa;
+                border:1px solid #dbe3e7;
+                box-shadow: 0 2px 3px #dbe3e7;
+                border-radius: 15px;
+            }
+            
+            .item-list-basic p{
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow:ellipsis;
+                text-align: left;
+                margin-top: 20px;
+                max-width:340px;
+            }
+            
+            .item-list-basic p a{
+                color:#5d6569;
+                text-decoration: none;
+                font-weight:bold;
+                font-size:18px;
+            }
+            
+            .item-list-basic p span{
+                display: block;
+                font-size: 13px;
+                color:#808d93;
+                padding-top:4px;
+            }
+            
+            .item-list-basic .delete{
+                background-color:#de4a4a;
+                border-radius: 50%;
+                color:#fff;
+                font-size:13px;
+                line-height: 22px;
+                width:22px;
+                height: 22px;
+                position: absolute;
+                top:-10px;
+                right:-10px;
+                text-align: center;
+                text-decoration: none;
+            
+            }
+         
+            .wrapper {
+                text-align: center;
+            }
+
+            .wrapper .button {
+                background-color:#72db7a;
+                border:1px solid #4CAF50;
+                box-shadow: 0 2px 3px #dbe3e7;
+                height: 50px;
+                top: 100px;
+                border-radius: 15px;
+                font-size: 13px;
+                font-weight:bold;
+                color:white;
+            }
+
+            .wrapper .button:hover {
+                background-color: #4CAF50; /* Green */
+                color: white;
+            }
+
+            /* Making the list responsive */
+            
+            @media (max-width: 400px) {
+            
+                .item-list-basic li{
+                    margin: 10px 0;
+                }
+            
+                .item-list-basic .delete{
+                    top: 10px;
+                    right: 10px;
+                }
+            
+                h1 { 
+                    font:normal 1.5em sans-serif;
+                }
+            
+                h2 { 
+                    font:normal 1.2em sans-serif;
+                }
+            
+            }
+            </style>
+            
+
+</head>
+<body>
+    <h1>
+        Corona-Indonesia: Corona Data Today
+    </h1>
+    
+    <h2>
+        Indonesia Data
+    </h2>
+
+    <div class="wrapper">
+            <button class="button" onclick="window.location.href='/world'">Go to World Data</button>
+        </div>
+
+    <ul class="item-list-basic">
+        {{range .Indonesia}}
+        <li>
+            <p>
+                <a>{{.Attribute.Provinsi}}</a>
+                <span>Confirmed: <b>{{.Attribute.Confirmed}}</b></span>
+                <span>Recovered: <b>{{.Attribute.Recovered}}</b></span>
+                <span>Deaths: <b>{{.Attribute.Deaths}}</b></span>
+                <span>Last Update: <b>{{.Attribute.LastUpdateStr}}</b></span>
+            </p>
+        </li>
+        {{end}}
+    </ul>
+</body>
+</html>
+
