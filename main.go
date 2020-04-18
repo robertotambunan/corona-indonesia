@@ -1,14 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
-	"time"
 
 	_ "github.com/heroku/x/hmetrics/onload"
 	"github.com/robfig/cron"
@@ -18,6 +15,10 @@ var (
 	// AllDataCache : caching data
 	AllDataCache AllData
 	lock         = sync.RWMutex{}
+
+	// caching indonesian last-update
+	lockIndonesianLastUpdate = sync.RWMutex{}
+	indonesianLastUpdate     = "None"
 )
 
 func main() {
@@ -27,20 +28,27 @@ func main() {
 	}
 
 	runCron()
-	http.HandleFunc("/", templateHandler)
+	http.HandleFunc("/world", templateWorldHandler)
+	http.HandleFunc("/", templateIndonesiaHandler)
 	log.Println("running in port :", port)
 	http.ListenAndServe(":"+port, nil)
 }
 
-func templateHandler(w http.ResponseWriter, r *http.Request) {
-	t := template.Must(template.ParseFiles("templates/index.html"))
+func templateWorldHandler(w http.ResponseWriter, r *http.Request) {
+	t := template.Must(template.ParseFiles("templates/index-world.html"))
+	t.Execute(w, AllDataCache)
+}
+
+func templateIndonesiaHandler(w http.ResponseWriter, r *http.Request) {
+	t := template.Must(template.ParseFiles("templates/index-indonesia.html"))
 	t.Execute(w, AllDataCache)
 }
 
 type (
 	// AllData : United all of the data
 	AllData struct {
-		Nations []AttributeNationData
+		Nations   []AttributeNationData
+		Indonesia []AttributeIndonesianData
 	}
 
 	// NationData : Present Model of Nation
@@ -57,53 +65,44 @@ type (
 	AttributeNationData struct {
 		Attribute NationData `json:"attributes"`
 	}
+
+	// IndonesianData : Present model of indonesian data
+	IndonesianData struct {
+		Provinsi      string `json:"Provinsi"`
+		Confirmed     int    `json:"Kasus_Posi"`
+		Recovered     int    `json:"Kasus_Semb"`
+		Deaths        int    `json:"Kasus_Meni"`
+		LastUpdateStr string
+	}
+
+	// AttributeIndonesianData : API struct for data
+	AttributeIndonesianData struct {
+		Attribute IndonesianData `json:"attributes"`
+	}
 )
 
 const (
-	dataURLNation = "https://api.kawalcorona.com/"
+	dataURLNation    = "https://api.kawalcorona.com/"
+	dataURLIndonesia = "https://api.kawalcorona.com/indonesia/provinsi/"
 )
 
 func runCron() {
 	nationData := getWorldCoronaData()
 	AllDataCache.Nations = nationData
-
+	indonesianData := getIndonesiaCoronaData()
+	AllDataCache.Indonesia = indonesianData
 	c := cron.New()
 	c.AddFunc("@every 10m", func() {
 		log.Println("Cron is Running every 10m")
 		nationData := getWorldCoronaData()
+		indonesianData := getIndonesiaCoronaData()
 		if len(nationData) > 0 {
 			lock.Lock()
 			AllDataCache.Nations = nationData
+			AllDataCache.Indonesia = indonesianData
 			lock.Unlock()
 		}
 	})
 	// Start cron with one scheduled job
 	c.Start()
-}
-
-func getWorldCoronaData() (result []AttributeNationData) {
-	req, err := http.NewRequest("GET", dataURLNation, nil)
-	if err != nil {
-		log.Println("NewRequest: ", err)
-		return
-	}
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal("Do: ", err)
-		return
-	}
-	defer resp.Body.Close()
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		log.Println("NewDecoder", err)
-	}
-
-	for i := range result {
-		tm := time.Unix(result[i].Attribute.LastUpdate, 0)
-		tempArr := strings.Split(tm.String(), " ")
-		if len(tempArr) >= 3 {
-			result[i].Attribute.LastUpdateStr = tempArr[1]
-		}
-	}
-	return
 }
