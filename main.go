@@ -15,10 +15,6 @@ var (
 	// AllDataCache : caching data
 	AllDataCache AllData
 	lock         = sync.RWMutex{}
-
-	// caching indonesian last-update
-	lockIndonesianLastUpdate = sync.RWMutex{}
-	indonesianLastUpdate     = "None"
 )
 
 func main() {
@@ -79,11 +75,6 @@ type (
 	AttributeIndonesianData struct {
 		Attribute IndonesianData `json:"attributes"`
 	}
-)
-
-const (
-	dataURLNation    = "https://api.kawalcorona.com/"
-	dataURLIndonesia = "https://api.kawalcorona.com/indonesia/provinsi/"
 )
 
 func runCron() {
