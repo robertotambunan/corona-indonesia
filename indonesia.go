@@ -4,7 +4,16 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sync"
 )
+
+var (
+	// caching indonesian last-update
+	lockIndonesianLastUpdate = sync.RWMutex{}
+	indonesianLastUpdate     = "None"
+)
+
+const dataURLIndonesia = "https://api.kawalcorona.com/indonesia/provinsi/"
 
 func getIndonesiaCoronaData() (result []AttributeIndonesianData) {
 	req, err := http.NewRequest("GET", dataURLIndonesia, nil)
@@ -12,12 +21,14 @@ func getIndonesiaCoronaData() (result []AttributeIndonesianData) {
 		log.Println("NewRequest: ", err)
 		return
 	}
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatal("Do: ", err)
 		return
 	}
+
 	defer resp.Body.Close()
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		log.Println("NewDecoder", err)
@@ -28,6 +39,5 @@ func getIndonesiaCoronaData() (result []AttributeIndonesianData) {
 		result[i].Attribute.LastUpdateStr = indonesianLastUpdate
 		lockIndonesianLastUpdate.RUnlock()
 	}
-
 	return
 }

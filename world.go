@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const dataURLNation = "https://api.kawalcorona.com/"
+
 func getWorldCoronaData() (result []AttributeNationData) {
 	req, err := http.NewRequest("GET", dataURLNation, nil)
 	if err != nil {
@@ -17,7 +19,7 @@ func getWorldCoronaData() (result []AttributeNationData) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Do: ", err)
+		log.Println("Do: ", err)
 		return
 	}
 	defer resp.Body.Close()
