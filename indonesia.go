@@ -25,7 +25,7 @@ func getIndonesiaCoronaData() (result []AttributeIndonesianData) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Do: ", err)
+		log.Println("Do: ", err)
 		return
 	}
 
